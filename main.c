@@ -3,8 +3,9 @@
 #include <Windows.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
 #include "main_functions.h"
-
+#pragma
 // main
 // 
 // notes
@@ -39,16 +40,6 @@
 
 void main()
 {
-	albums[1].number = 2523;
-	
-	albums[2].number = 523;
-	
-	albums[3].number = 6343;
-	for (size_t i = 1; i <= 10; i++)
-	{
-		albums[i].number = rand();
-	}
-	albums_number = 10;
 	printf("%d", albums[1].photos_total);
 	generate_main_screen(1, albums_number, albums);
 }

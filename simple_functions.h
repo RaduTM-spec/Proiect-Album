@@ -7,17 +7,17 @@
 
 typedef struct albums_template
 {
-	char name[50],
-		dimension_type[5];//KB, MB, GB
-	unsigned int number, photos_total, dimension;
-
+	char name[50];	
+	unsigned int number, photos_total;
+	double dimension;//MB
 }album;
 typedef struct photos_template
 {
 	char name[50];
-	char extension[50], album[50],
-		dimension_type[5];//KB, MB, GB
-	unsigned int number, dimension;
+	char extension[50];
+	unsigned int album_location[50];	
+	unsigned int number;
+	double dimension;//MB
 }photo;
 
 album albums[100];
