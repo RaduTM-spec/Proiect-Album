@@ -22,15 +22,14 @@
 	add_album()
 	del_album()
 
-	[-- MAIN SCREEN --]
-	Choose album:
+	[-- MAIN SCREEN --] +NEW
 	Album1                                                                          Open Delete
 	Album2																			Open Delete
 	Album3     [the current option is highlighted in a specific color]   then       Open Delete
+	[CONTROLS]
 
-	[-- ALBUM SCREEN --]  Number of Photos: X    Dimension: X
-	ADD PHOTO
-	Name   
+	[-- ALBUM SCREEN --] +NEW  Number of Photos: X    Dimension: X
+  
 	Photo1 [Move Edit Delete]
 	Photo2 [Move Edit Delete]
 	Photo3 [Move Edit Delete]
@@ -40,6 +39,12 @@
 
 void main()
 {
-	printf("%d", albums[1].photos_total);
-	generate_main_screen(1, albums_number, albums);
+	generate_main_screen(1,albums_number,albums);
 }
+
+/*
+BUGS FOUND
+- dupa ce accesez un meniu si adaug poze in el si revin in galerie, daca recreez un nou album nu ma lasa sa ii adaug nume ( poate fi sters, o singura data are loc asta)
+
+
+*/
