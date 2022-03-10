@@ -2,13 +2,13 @@
 
 //prototype
 void generate_main_screen(unsigned int current_album_position, unsigned int albums_number, album albums[]);
-void generate_album_screen(unsigned int album_index);
-void print_album_screen(unsigned int current_photo_pos);
+void generate_album_screen();
+void print_album_screen();
 
 
 
 
-//defined
+//defined main
 void add_album(album albums[])
 {
 	albums_number++;
@@ -21,15 +21,17 @@ void add_album(album albums[])
 
 
 	//create number
-	char input_name[50];
+
 	printf(" Album's Number: %d", an);
 	albums[an].number = an;
 
 	//read name
+	char input_name[50];
 	printf("\n Album's Name: ");
 	fgets(input_name, sizeof(input_name), stdin);
 	input_name[strcspn(input_name, "\n")] = 0;
-	strcat_s(albums[an].name,50, input_name);
+	strcpy_s(albums[an].name,1, "");
+	strcat_s(albums[an].name, 50, input_name);
 
 	albums[an].photos_total = 0;
 
@@ -44,15 +46,17 @@ void add_album(album albums[])
 	Sleep(600);
 	generate_main_screen(1, albums_number, albums);
 
-	
+
 }
-void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albums_number, album albums[])
+void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[])
 {
 	clear_screen();
-	for (size_t i = album_index+1; i <= albums_number; i++)
+	for (unsigned int i = album_index + 1; i <= albs_number; i++)
 	{
 		albums[i - 1].number = albums[i].number;
-
+		albums[i - 1].dimension = albums[i].dimension;
+		albums[i - 1].photos_total = albums[i].photos_total;
+		strcpy_s(albums[i - 1].name, 50, albums[i].name);
 	}
 
 	//deplasare la stanga
@@ -63,8 +67,62 @@ void remove_album(unsigned int album_index, unsigned int current_album_position,
 	generate_main_screen(current_album_position, albums_number, albums);
 }
 
+//defined album
+void add_photo()
+{
+	albums[current_album_number].photos_total++;
 
-void open_remove_main(unsigned int current_album_pos, unsigned int albums_number, album albums[],unsigned int index)
+	unsigned int photos_tot = albums[current_album_number].photos_total;
+
+
+	clear_screen();
+	set_green();
+	printf(" [ NEW PHOTO ]\n");
+	set_blue();
+
+
+	//create number
+
+	printf(" Photo's Number: %d", albums[current_album_number].photos_total);
+	albums[current_album_number].photos[photos_tot].number = photos_tot;
+
+	//Create name
+
+    printf("\n Photo's Name: ");
+	char photo_name[10] = "Photo_";
+	char photo_number = photos_tot + '0';
+	photo_name[6] = photo_number;
+	photo_name[7] = '\0';
+
+	strcpy_s(albums[current_album_number].photos[photos_tot].name, 50, photo_name);
+	
+	printf("%s",photo_name);
+
+	//Dimension
+	printf("\n Dimension in MB: ");
+	double dimension;
+	scanf_s("%lf", &dimension);
+	albums[current_album_number].photos[photos_tot].dimension = dimension;
+	albums[current_album_number].dimension += dimension;
+	//set dimension
+
+   
+
+
+
+	set_green();
+	printf(" [ DONE ]");
+	Sleep(600);
+	generate_album_screen();
+
+}
+void remove_photo(unsigned int photo_index, unsigned int alb_number)
+{
+	;
+}
+
+//main
+void open_remove_main(unsigned int current_album_pos, unsigned int albums_number, album albums[], unsigned int index)
 {
 
 	//printing
@@ -75,7 +133,7 @@ void open_remove_main(unsigned int current_album_pos, unsigned int albums_number
 	printf("   REMOVE\n");
 
 	//continue print
-	for (unsigned int i = index+1; i <= albums_number; i++)
+	for (unsigned int i = index + 1; i <= albums_number; i++)
 	{
 		set_white();
 		printf("   %d     %s\n", albums[i].number, albums[i].name);
@@ -85,7 +143,7 @@ void open_remove_main(unsigned int current_album_pos, unsigned int albums_number
 	printf("              [ CONTROLS ] \n");
 	if (input_controls == 1)
 		print_controls();
-    //stop printing
+	//stop printing
 
 	while (true)
 	{
@@ -96,9 +154,10 @@ void open_remove_main(unsigned int current_album_pos, unsigned int albums_number
 			set_green();
 			printf("\n  oppening...");
 			Sleep(1000);
-			generate_album_screen(index);
+			current_album_number = current_album_pos;
+			generate_album_screen();
 
-
+			break;
 			//opening
 		}
 		else if (x == 'r')
@@ -107,51 +166,58 @@ void open_remove_main(unsigned int current_album_pos, unsigned int albums_number
 			clear_screen();
 			printf("\n  removing...");
 			Sleep(1000);
+			
 			remove_album(index, current_album_pos, albums_number, albums);
+			
 			//remove
 		}
 		else if (x == 'a')
 		{
 			input_in_main = 0;
 			generate_main_screen(current_album_pos, albums_number, albums);
+			
 		}
 		else if (x == 'c')
-		{	
-				input_controls = 1;
-				print_controls();
+		{
+			input_controls = 1;
+			print_controls();
+			
 		}
 		else if (x == 's')
 		{
 			input_in_main = 0;
-			generate_main_screen(current_album_pos+1, albums_number, albums);
+			if (current_album_pos < albums_number)
+			    generate_main_screen(current_album_pos + 1, albums_number, albums);
+		
 		}
 		else if (x == 'w')
 		{
 			input_in_main = 0;
-			if(current_album_pos > 1)
-			 generate_main_screen(current_album_pos - 1, albums_number, albums);
-		}
+			if (current_album_pos > 1)
+				generate_main_screen(current_album_pos - 1, albums_number, albums);
 			
-	}
-	
-	
+		}
 
-	
+	}
+
+
+
+
 }
-void print_main_screen(unsigned int current_album_pos,unsigned int albums_number, album albums[],unsigned int input,unsigned int c_input)
+void print_main_screen(unsigned int current_album_pos, unsigned int albums_number, album albums[], unsigned int input, unsigned int c_input)
 {
 	clear_screen();
 	set_yellow();
 	printf("              [ GALLERY ]   ");
 	set_green();
 	printf("+NEW \n\n");
-	
-	
+
+
 	if (albums_number == 0)
 	{
-			set_white();
-			printf("         The Gallery is Empty!");
-	}	
+		set_white();
+		printf("         The Gallery is Empty!");
+	}
 	else
 	{
 		set_red();
@@ -182,72 +248,167 @@ void print_main_screen(unsigned int current_album_pos,unsigned int albums_number
 	if (c_input == 1)
 		print_controls();
 }
-void generate_main_screen(unsigned int current_album_position,unsigned int albums_number,album albums[])
+void generate_main_screen(unsigned int current_album_position, unsigned int albums_number, album albums[])
 {
 	clear_screen();
-	print_main_screen(current_album_position,albums_number,albums,input_in_main,input_controls);//first album is 1
+	print_main_screen(current_album_position, albums_number, albums, input_in_main, input_controls);//first album is 1
 
-		char key = _getch();
-		switch ((int)key)
+	char key = _getch();
+	switch ((int)key)
+	{
+	case 27: //exit ESC
+		clear_screen();
+		exit(0);
+		break;
+	case 97: //back case
+		input_in_main = 0;
+		generate_main_screen(current_album_position, albums_number, albums);
+	case 99: //controls case C
+		if (input_controls == 0)
+			input_controls = 1;
+		else input_controls = 0;
+		generate_main_screen(current_album_position, albums_number, albums);
+
+	case 100: //create the submenu [OPEN REMOVE] ( album number) NEXT
+		input_in_main = 1;
+		generate_main_screen(current_album_position, albums_number, albums);
+		break;
+	case 115:// go down if possible DOWN ARROW
+		input_in_main = 0;
+		if (current_album_position == albums_number)
+			generate_main_screen(current_album_position, albums_number, albums);
+		else
 		{
-		case 27: //exit ESC
-			clear_screen();
-			exit(0);
-			break;
-		case 97: //back case
-			input_in_main = 0;
+			generate_main_screen(++current_album_position, albums_number, albums);
+		}
+		break;
+	case 119: // go up if possible UP ARROW
+		input_in_main = 0;
+		if (current_album_position == 1)
 			generate_main_screen(current_album_position, albums_number, albums);
-		case 99: //controls case C
-			if (input_controls == 0)
-				input_controls = 1;
-			else input_controls = 0;
-			generate_main_screen(current_album_position, albums_number, albums);
+		else
+		{
+			generate_main_screen(--current_album_position, albums_number, albums);
+		}
+		break;
 
-		case 100: //create the submenu [OPEN REMOVE] ( album number) NEXT
-			input_in_main = 1;
-			generate_main_screen(current_album_position, albums_number, albums);
-			break;
-		case 115:// go down if possible DOWN ARROW
-			input_in_main = 0;
-			if (current_album_position == albums_number)
-				generate_main_screen(current_album_position, albums_number, albums);
-			else
-			{
-				generate_main_screen(++current_album_position, albums_number,albums);
-			}
-			break;
-		case 119: // go up if possible UP ARROW
-			input_in_main = 0;
-			if (current_album_position == 1)
-				generate_main_screen(current_album_position, albums_number, albums);
-			else
-			{
-				generate_main_screen(--current_album_position, albums_number,albums);
-			}
-			break;
-		
 
 
 		//BUTTONS
-		case 110: //ADD
-			add_album(albums);
-			
-			break;
-		default: //do nothing s
-			generate_main_screen(--current_album_position, albums_number, albums);
-			break;
-		
-	    }
-    
+	case 110: //ADD
+		add_album(albums);
+
+		break;
+	default: //do nothing s
+		generate_main_screen(current_album_position, albums_number, albums);
+		break;
+
+	}
+
 }
 
-
-void generate_album_screen(unsigned int album_index)
+//album
+void open_remove_album(unsigned int current_photo_pos, unsigned int index)
 {
 	clear_screen();
 }
-void print_album_screen(unsigned int current_photo_pos)
+void generate_album_screen()
 {
+	clear_screen();
+	print_album_screen();
+	char key = _getch();
+	switch (key)
+	{
+	case 'a':
+		input_in_main = 0;
+		generate_main_screen(1, albums_number, albums);
+		break;
+	case 27: //exit ESC
+		clear_screen();
+		exit(0);
+		break;
+	case 99: //controls case C
+		if (input_controls == 0)
+			input_controls = 1;
+		else input_controls = 0;
+		generate_album_screen(current_album_number);
+		break;
+		//down and up
+	case 115:// go down if possible DOWN ARROW
+		input_in_album = 0;
+		if (current_photo_position == albums[current_album_number].photos_total)
+			generate_album_screen();
+		else
+		{
+			++current_photo_position;
+			generate_album_screen();
+		}
+		break;
+	case 119: // go up if possible UP ARROW
+		input_in_main = 0;
+		if (current_photo_position == 1)
+			generate_album_screen();
+		else
+		{
+			--current_photo_position;
+			generate_album_screen();
+		}
+		break;
+	case 110: //ADD
+		add_photo();
+	default:
+		generate_album_screen();
+		break;
+
+	}
+
+
 
 }
+void print_album_screen()
+{
+	clear_screen();
+	set_yellow();
+	printf("              [ %s ]   ", albums[current_album_number].name);
+	set_green();
+	printf("+NEW");
+	set_yellow();
+	printf("  Dimension: %0.2f MB\n\n", albums[current_album_number].dimension);
 
+
+	if (albums[current_album_number].photos_total == 0)
+	{
+		set_white();
+		printf("         There are no Photos!");
+	}
+	else
+	{
+		set_red();
+		printf(" Number  Name\n");
+		set_white();
+
+		for (unsigned int i = 1; i <= albums[current_album_number].photos_total; i++)
+		{
+			if (i == current_photo_position)
+			{
+				set_blue();
+				if (input_in_album == 0)
+				{
+					printf(">> %d     %s\n", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+				}
+
+				if (input_in_album == 1)
+					open_remove_album(current_photo_position, i);
+
+				set_white();
+			}
+			else printf("   %d     %s\n", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+		}
+	}
+	printf("\n\n");
+	set_yellow();
+	printf("              [ CONTROLS ] \n");
+	if (input_controls == 1)
+		print_controls();
+
+}

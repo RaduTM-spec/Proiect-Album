@@ -1,29 +1,42 @@
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 #include <Windows.h>
 #include <dos.h>
+#include <string.h>
+#include <assert.h>
 
-typedef struct albums_template
-{
-	char name[50];	
-	unsigned int number, photos_total;
-	double dimension;//MB
-}album;
+
 typedef struct photos_template
 {
 	char name[50];
-	char extension[50];
-	unsigned int album_location[50];	
 	unsigned int number;
 	double dimension;//MB
 }photo;
 
+typedef struct albums_template
+{
+	char name[50];
+	unsigned int number, photos_total;
+	double dimension;//MB
+	photo photos[1000];
+}album;
+
+
+
+
 album albums[100];
-unsigned int albums_number = 0, input_in_main, input_controls = 0;
 
+unsigned int
+albums_number = 0, //total albums number
 
+input_in_main,  // if 0 then OPEN/REMOVE are invisible, if 1 they are visible
+input_in_album, //same as input_in_main but for album_screen
+
+input_controls = 0, //if 0 controls are invisible
+
+current_photo_position = 1; // current_photo_position, always starts with 0
+current_album_number = 1;
 
 
 
@@ -55,6 +68,6 @@ void print_controls()
 	printf("                NEXT - d\n");
 	printf("                BACK - a\n");
 	printf("                OPEN - o\n");
-	printf("                DEL - r\n");
-	printf("                NEW - n\n");
+	printf("                DEL  - r\n");
+	printf("                NEW  - n\n");
 }
