@@ -5,7 +5,7 @@
 #include <dos.h>
 #include <string.h>
 #include <assert.h>
-
+#define _CRT_SECURE_NO_WARNINGS
 
 typedef struct photos_template
 {
@@ -28,7 +28,7 @@ typedef struct albums_template
 album albums[100];
 
 unsigned int
-albums_number = 0, //total albums number
+albums_number, //total albums number
 
 input_in_main,  // if 0 then OPEN/REMOVE are invisible, if 1 they are visible
 input_in_album, //same as input_in_main but for album_screen
@@ -70,4 +70,11 @@ void print_controls()
 	printf("                OPEN - o\n");
 	printf("                DEL  - r\n");
 	printf("                NEW  - n\n");
+}
+
+void saving_screen()
+{
+	clear_screen();
+	set_green();
+	printf("\n   saving...");
 }
