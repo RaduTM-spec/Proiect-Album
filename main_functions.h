@@ -1,11 +1,71 @@
 #include "simple_functions.h"
+//load_data
+void load_data()
+{
+	
+	FILE* file = fopen("data.txt","r");
+	fscanf(file, "%d", &albums_number);
+	unsigned int album_index = 1;
+	for (; album_index <= albums_number; album_index++)
+	{
+		fscanf(file, "%u%s%lf%u",
+			&albums[album_index].number,
+			&albums[album_index].name,
+			&albums[album_index].dimension,
+			&albums[album_index].photos_total);
+		for (unsigned int photo_index = 1; photo_index <= albums[album_index].photos_total; photo_index++)
+		{
+			fscanf(file, "%u%s%lf",
+				&albums[album_index].photos[photo_index].number,
+				&albums[album_index].photos[photo_index].name,
+				&albums[album_index].photos[photo_index].dimension);
+		}
+
+	}
+	fclose(file);
+}
+void save_data()
+{
+	FILE* file = fopen("data.txt","w");
+	fprintf(file, "%d\n", albums_number);
+	unsigned int album_index = 1;
+	for (; album_index <= albums_number; album_index++)
+	{
+		fprintf(file, "%u %s %lf %u\n",
+			albums[album_index].number,
+			albums[album_index].name,
+			albums[album_index].dimension,
+			albums[album_index].photos_total);
+		for (unsigned int photo_index = 1; photo_index <= albums[album_index].photos_total; photo_index++)
+		{
+			fprintf(file, "%u %s %lf\n",
+				albums[album_index].photos[photo_index].number,
+				albums[album_index].photos[photo_index].name,
+				albums[album_index].photos[photo_index].dimension);	
+		}
+
+	}
+	fclose(file);
+}
+
+
 
 //prototype
 void generate_main_screen(unsigned int current_album_position, unsigned int albums_number, album albums[]);
 void generate_album_screen();
 void print_album_screen();
+void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[]);
 
+//verify name interity
+int album_integrity(unsigned int album_index)
+{
+	if (strlen(albums[album_index].name) == 0)
+	{
+		return 0;
+	}
+	return 1;
 
+}
 
 
 //defined main
@@ -38,7 +98,11 @@ void add_album(album albums[])
 	//set dimension
 	albums[an].dimension = 0.0;
 
-
+	if (!album_integrity(an))
+	{
+		albums_number--;
+		add_album(albums);
+	}
 
 
 	set_green();
@@ -153,8 +217,9 @@ void open_remove_main(unsigned int current_album_pos, unsigned int albums_number
 			clear_screen();
 			set_green();
 			printf("\n  oppening...");
-			Sleep(1000);
+			Sleep(700);
 			current_album_number = current_album_pos;
+			current_photo_position = 1;
 			generate_album_screen();
 
 			break;
@@ -165,8 +230,8 @@ void open_remove_main(unsigned int current_album_pos, unsigned int albums_number
 			set_red();
 			clear_screen();
 			printf("\n  removing...");
-			Sleep(1000);
-			
+			Sleep(700);
+			current_photo_position = 1;
 			remove_album(index, current_album_pos, albums_number, albums);
 			
 			//remove
@@ -257,7 +322,15 @@ void generate_main_screen(unsigned int current_album_position, unsigned int albu
 	switch ((int)key)
 	{
 	case 27: //exit ESC
+		
+		saving_screen();
+		save_data();// rewrite the data file
+
+		Sleep(500);//for faster save it will be increased
+		set_green();
 		clear_screen();
+		printf("\n   [ SAVED ] \n");
+		set_white();
 		exit(0);
 		break;
 	case 97: //back case
@@ -323,9 +396,9 @@ void generate_album_screen()
 		input_in_main = 0;
 		generate_main_screen(1, albums_number, albums);
 		break;
-	case 27: //exit ESC
-		clear_screen();
-		exit(0);
+	case 27: //exit ESC - , move back as 'a'
+		input_in_main = 0;
+		generate_main_screen(1, albums_number, albums);
 		break;
 	case 99: //controls case C
 		if (input_controls == 0)
@@ -373,7 +446,7 @@ void print_album_screen()
 	set_green();
 	printf("+NEW");
 	set_yellow();
-	printf("  Dimension: %0.2f MB\n\n", albums[current_album_number].dimension);
+	printf("     Dimension: %0.2f MB\n\n", albums[current_album_number].dimension);
 
 
 	if (albums[current_album_number].photos_total == 0)
