@@ -66,6 +66,13 @@ int album_integrity(unsigned int album_index)
 	return 1;
 
 }
+int add_underscores(unsigned int album_index)
+{
+	for (int i = 0; i < strlen(albums[album_index].name); i++)
+		if (albums[album_index].name[i] == ' ')
+			albums[album_index].name[i] = '_';
+
+}
 
 
 //defined main
@@ -81,7 +88,7 @@ void add_album(album albums[])
 
 
 	//create number
-	printf(" Album's Number: ", an);
+	printf(" Album's Number: ");
 	set_white();
 	printf("%d", an);
 	albums[an].number = an;
@@ -105,10 +112,14 @@ void add_album(album albums[])
 
 	if (!album_integrity(an))
 	{
+		
+		
 		albums_number--;
 		add_album(albums);
 	}
-
+	//Add _ when spaces are met 
+	add_underscores(an);
+		
 
 	set_green();
 	printf(" [ DONE ]");
@@ -149,7 +160,7 @@ void rename_album(unsigned int album_index)
 	set_yellow();
 	printf(" [ %s ]\n", albums[album_index].name);
 	set_green();
-	printf("Change name to: ");
+	printf("Change the name to: ");
 	set_white();
 	char input_name[50] = "";
 	fflush(stdin);
@@ -162,6 +173,7 @@ void rename_album(unsigned int album_index)
 	{
 		rename_album(album_index);
 	}
+	add_underscores(album_index);
 	input_in_main = 0;
 	set_green();
 	printf(" [ DONE ]");
@@ -193,8 +205,21 @@ void add_photo()
     printf("\n Photo's Name: ");
 	char photo_name[10] = "Photo_";
 	char photo_number = photos_tot + '0';
-	photo_name[6] = photo_number;
-	photo_name[7] = '\0';
+	if (photo_number < 10)
+	{
+		photo_name[6] = photo_number;
+		photo_name[7] = '\0';
+	}
+	else if (photo_number < 100)
+	{
+		//48 = '0'
+		//57 = '9'
+		//58 = 10 49 si 48
+		//59 = 11 49 si 49
+		photo_name[6] = '0' + photos_tot / 10 % 10;
+		photo_name[7] = photo_number - 10 * (photos_tot / 10 % 10);
+		photo_name[8] = '\0';
+	}
 
 	strcpy_s(albums[current_album_number].photos[photos_tot].name, 50, photo_name);
 	
