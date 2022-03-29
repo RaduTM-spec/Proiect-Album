@@ -56,6 +56,6 @@ void main()
 }
 
 /*
-NO BUGS
+open_remove_album in development [not neccesarily]
 
 */

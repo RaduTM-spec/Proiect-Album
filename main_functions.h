@@ -245,7 +245,22 @@ void add_photo()
 }
 void remove_photo(unsigned int photo_index, unsigned int alb_number)
 {
-	;
+	clear_screen();
+	set_red();
+	printf("\n  removing...");
+	albums[alb_number].dimension -= albums[alb_number].photos[photo_index].dimension;
+	for (size_t i = photo_index; i < albums[alb_number].photos_total; i++)
+	{
+		albums[alb_number].photos[i].number = albums[alb_number].photos[i + 1].number;
+		albums[alb_number].photos[i].dimension = albums[alb_number].photos[i + 1].dimension;
+		strcpy_s(albums[alb_number].photos[i].name, 50, albums[alb_number].photos[i+1].name);
+	}
+	albums[alb_number].photos_total--;
+	if (current_photo_position > 2);
+		current_photo_position--;
+    Sleep(700);
+	generate_album_screen();
+	
 }
 
 //main
@@ -504,6 +519,8 @@ void generate_album_screen()
 		break;
 	case 110: //ADD
 		add_photo();
+	case 'r': //REMOVE
+		remove_photo(current_photo_position, current_album_number);
 	default:
 		generate_album_screen();
 		break;
@@ -541,12 +558,26 @@ void print_album_screen()
 
 		for (unsigned int i = 1; i <= albums[current_album_number].photos_total; i++)
 		{
+			int spaceing = 50 - strlen(albums[current_album_number].photos[i].name);
 			if (i == current_photo_position)
 			{
 				set_blue();
 				if (input_in_album == 0)
 				{
-					printf(">> %d     %s\n", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+					printf(">> %d     %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+
+					//space to then print the the dimension
+					for (size_t i = 0; i < spaceing; i++)
+					{
+						printf(" ");
+					}
+					if (albums[current_album_number].photos[i].dimension < 10)
+						printf("  %0.2f MB\n", albums[current_album_number].photos[i].dimension);
+					else if (albums[current_album_number].photos[i].dimension < 100)
+						printf(" %0.2f MB\n", albums[current_album_number].photos[i].dimension);
+					else
+						printf("%0.2f MB\n", albums[current_album_number].photos[i].dimension);
+
 				}
 
 				if (input_in_album == 1)
@@ -554,7 +585,22 @@ void print_album_screen()
 
 				set_white();
 			}
-			else printf("   %d     %s\n", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+			else
+			{
+				printf("   %d     %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+				//space to then print the the dimension
+				for (size_t i = 0; i < spaceing; i++)
+				{
+					printf(" ");
+				}
+			
+				if (albums[current_album_number].photos[i].dimension < 10)
+					printf("  %0.2f MB\n", albums[current_album_number].photos[i].dimension);
+				else if(albums[current_album_number].photos[i].dimension < 100)
+					printf(" %0.2f MB\n", albums[current_album_number].photos[i].dimension);
+				else
+					printf("%0.2f MB\n", albums[current_album_number].photos[i].dimension);
+			}
 		}
 	}
 	printf("\n\n");
