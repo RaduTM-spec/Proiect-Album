@@ -70,6 +70,7 @@ void print_controls()
 	printf("                OPEN - o\n");
 	printf("                DEL  - r\n");
 	printf("                NEW  - n\n");
+	printf("                SAVE - esc\n");
 }
 
 void saving_screen()

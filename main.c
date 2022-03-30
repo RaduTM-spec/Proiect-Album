@@ -56,8 +56,6 @@ void main()
 }
 
 /*
-BUGS FOUND
-- dupa ce accesez un meniu si adaug poze in el si revin in galerie, daca recreez un nou album nu ma lasa sa ii adaug nume ( poate fi sters, o singura data are loc asta)
-
+open_remove_album in development [not neccesarily]
 
 */
