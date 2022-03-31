@@ -6,12 +6,13 @@ void load_data()
 	FILE* file = fopen("data.txt","r");
 	fscanf(file, "%d", &albums_number);
 	unsigned int album_index = 1;
+	albums[album_index].dimension = 0;//modification
 	for (; album_index <= albums_number; album_index++)
 	{
-		fscanf(file, "%u%s%lf%u",
+		fscanf(file, "%u%s%u",
 			&albums[album_index].number,
 			&albums[album_index].name,
-			&albums[album_index].dimension,
+			
 			&albums[album_index].photos_total);
 		for (unsigned int photo_index = 1; photo_index <= albums[album_index].photos_total; photo_index++)
 		{
@@ -19,6 +20,7 @@ void load_data()
 				&albums[album_index].photos[photo_index].number,
 				&albums[album_index].photos[photo_index].name,
 				&albums[album_index].photos[photo_index].dimension);
+			albums[album_index].dimension += albums[album_index].photos[photo_index].dimension;
 		}
 
 	}
@@ -31,10 +33,10 @@ void save_data()
 	unsigned int album_index = 1;
 	for (; album_index <= albums_number; album_index++)
 	{
-		fprintf(file, "%u %s %lf %u\n",
+		fprintf(file, "%u %s %u\n",
 			albums[album_index].number,
 			albums[album_index].name,
-			albums[album_index].dimension,
+			//modification, no write of album dimension
 			albums[album_index].photos_total);
 		for (unsigned int photo_index = 1; photo_index <= albums[album_index].photos_total; photo_index++)
 		{
@@ -564,8 +566,9 @@ void print_album_screen()
 				set_blue();
 				if (input_in_album == 0)
 				{
-					printf(">> %d     %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
-
+					if(albums[current_album_number].photos[i].number<10)
+					  printf(">> %d     %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+					else printf(">> %d    %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
 					//space to then print the the dimension
 					for (size_t i = 0; i < spaceing; i++)
 					{
@@ -587,7 +590,10 @@ void print_album_screen()
 			}
 			else
 			{
-				printf("   %d     %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+				if(albums[current_album_number].photos[i].number < 10)
+				   printf("   %d     %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
+				else
+					printf("   %d    %s", albums[current_album_number].photos[i].number, albums[current_album_number].photos[i].name);
 				//space to then print the the dimension
 				for (size_t i = 0; i < spaceing; i++)
 				{

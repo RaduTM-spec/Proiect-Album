@@ -58,4 +58,8 @@ void main()
 /*
 open_remove_album in development [not neccesarily]
 
+
+modifications:
+in load - no read of album dimension ( is calculated directly when the photo dimension is read)
+in save - no write of album dimension
 */
