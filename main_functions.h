@@ -6,12 +6,13 @@ void load_data()
 	FILE* file = fopen("data.txt","r");
 	fscanf(file, "%d", &albums_number);
 	unsigned int album_index = 1;
+	albums[album_index].dimension = 0;//modification
 	for (; album_index <= albums_number; album_index++)
 	{
-		fscanf(file, "%u%s%lf%u",
+		fscanf(file, "%u%s%u",
 			&albums[album_index].number,
 			&albums[album_index].name,
-			&albums[album_index].dimension,
+			
 			&albums[album_index].photos_total);
 		for (unsigned int photo_index = 1; photo_index <= albums[album_index].photos_total; photo_index++)
 		{
@@ -19,6 +20,7 @@ void load_data()
 				&albums[album_index].photos[photo_index].number,
 				&albums[album_index].photos[photo_index].name,
 				&albums[album_index].photos[photo_index].dimension);
+			albums[album_index].dimension += albums[album_index].photos[photo_index].dimension;
 		}
 
 	}
@@ -31,10 +33,10 @@ void save_data()
 	unsigned int album_index = 1;
 	for (; album_index <= albums_number; album_index++)
 	{
-		fprintf(file, "%u %s %lf %u\n",
+		fprintf(file, "%u %s %u\n",
 			albums[album_index].number,
 			albums[album_index].name,
-			albums[album_index].dimension,
+			//modification, no write of album dimension
 			albums[album_index].photos_total);
 		for (unsigned int photo_index = 1; photo_index <= albums[album_index].photos_total; photo_index++)
 		{
@@ -122,10 +124,10 @@ void add_album(album albums[])
 		
 
 	set_green();
+	save_data();
 	printf(" [ DONE ]");
-	Sleep(600);
+	Sleep(400);
 	generate_main_screen(1, albums_number, albums);
-
 
 }
 void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[])
@@ -152,6 +154,7 @@ void remove_album(unsigned int album_index, unsigned int current_album_position,
 	albums_number--;
 	if (current_album_position > 1)
 		current_album_position--;
+	save_data();
 	generate_main_screen(current_album_position, albums_number, albums);
 }
 void rename_album(unsigned int album_index)
@@ -176,8 +179,9 @@ void rename_album(unsigned int album_index)
 	add_underscores(album_index);
 	input_in_main = 0;
 	set_green();
+	save_data();
 	printf(" [ DONE ]");
-	Sleep(600);
+	Sleep(400);
 	generate_main_screen(1, albums_number, albums);
 
 }
@@ -238,8 +242,10 @@ void add_photo()
 
 
 	set_green();
+	save_data();
 	printf(" [ DONE ]");
-	Sleep(600);
+	Sleep(400);
+	
 	generate_album_screen();
 
 }
@@ -258,7 +264,8 @@ void remove_photo(unsigned int photo_index, unsigned int alb_number)
 	albums[alb_number].photos_total--;
 	if (current_photo_position > 2);
 		current_photo_position--;
-    Sleep(700);
+    Sleep(500);
+	save_data();
 	generate_album_screen();
 	
 }
@@ -405,6 +412,7 @@ void print_main_screen(unsigned int current_album_pos, unsigned int albums_numbe
 }
 void generate_main_screen(unsigned int current_album_position, unsigned int albums_number, album albums[])
 {
+	save_data();
 	clear_screen();
 	print_main_screen(current_album_position, albums_number, albums, input_in_main, input_controls);//first album is 1
 
@@ -477,6 +485,7 @@ void open_remove_album(unsigned int current_photo_pos, unsigned int index)
 }
 void generate_album_screen()
 {
+	save_data();
 	clear_screen();
 	print_album_screen();
 	char key = _getch();
