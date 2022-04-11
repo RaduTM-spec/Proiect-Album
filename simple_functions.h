@@ -26,8 +26,11 @@ typedef struct albums_template
 
 
 album albums[100];
+photo single_photos[10000];
 
 unsigned int
+single_photos_number,
+single_photos_current_pos = 1,// counter that keeps the number of photos not added to any album
 albums_number, //total albums number
 
 input_in_main,  // if 0 then OPEN/REMOVE are invisible, if 1 they are visible

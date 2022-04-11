@@ -4,6 +4,7 @@ void load_data()
 {
 	
 	FILE* file = fopen("data.txt","r");
+	//read albums
 	fscanf(file, "%d", &albums_number);
 	unsigned int album_index = 1;
 	albums[album_index].dimension = 0;//modification
@@ -24,6 +25,17 @@ void load_data()
 		}
 
 	}
+	//read single photos
+	fscanf(file, "%d", &single_photos_number);
+	for (unsigned int photo_index = 1; photo_index <= single_photos_number; photo_index++)
+	{
+		fscanf(file, "%u%s%lf",
+			&single_photos[photo_index].number,
+			&single_photos[photo_index].name,
+			&single_photos[photo_index].dimension);
+		
+	}
+
 	fclose(file);
 }
 void save_data()
@@ -47,16 +59,228 @@ void save_data()
 		}
 
 	}
+	
+
+	//save single_photos
+	fprintf(file, "%d\n", single_photos_number);
+	for (unsigned int photo_index = 1; photo_index <= single_photos_number; photo_index++)
+	{
+		fprintf(file, "%u %s %lf\n",
+			single_photos[photo_index].number,
+			single_photos[photo_index].name,
+			single_photos[photo_index].dimension);
+	}
+	
 	fclose(file);
 }
-
-
 
 //prototype
 void generate_main_screen(unsigned int current_album_position, unsigned int albums_number, album albums[]);
 void generate_album_screen();
 void print_album_screen();
 void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[]);
+void generate_single_photos();
+
+//gallery
+void remove_photo_from_singles(unsigned int index)
+{
+	//needs removal after transfering
+
+	for (size_t i = index; i < single_photos_number; i++)
+	{
+		
+		single_photos[i].dimension = single_photos[i + 1].dimension;
+		strcpy_s(single_photos[i].name, 50, single_photos[i + 1].name);
+	}
+	single_photos_number--;
+	if (single_photos_current_pos > 2)
+	single_photos_current_pos--;
+	Sleep(500);
+	save_data();
+	generate_single_photos();
+}
+void add_photo_to_album(unsigned int index_of_photo)
+{
+	clear_screen();
+	set_green();
+	unsigned int current_album_number;
+	printf("\n  Insert the album's number you want to transfer this photo: ");
+		scanf("%d", &current_album_number);
+
+		if (current_album_number < 1 || current_album_number > albums_number)
+		{
+			printf("\n  This album doesn't exist!\n\n    Press any key to retry or 'a' to abort...");
+			char key = _getch();
+			if (key == 'a')
+				generate_single_photos();
+			else
+				add_photo_to_album(index_of_photo);
+
+		}
+	///TRANSFER
+	albums[current_album_number].photos_total++;
+
+	unsigned int photos_tot = albums[current_album_number].photos_total;
+
+
+	clear_screen();
+	set_green();
+	printf(" ...transfering\n");
+	Sleep(300);
+
+	//create number
+
+	
+	albums[current_album_number].photos[photos_tot].number = photos_tot;
+
+	//Create name
+
+	
+
+	strcpy_s(albums[current_album_number].photos[photos_tot].name, 50, single_photos[index_of_photo].name);
+
+	
+
+	//Dimension
+	
+	albums[current_album_number].photos[photos_tot].dimension = single_photos[index_of_photo].dimension;
+	albums[current_album_number].dimension += single_photos[index_of_photo].dimension;
+	//set dimension
+
+
+
+	remove_photo_from_singles(index_of_photo);
+
+	set_green();
+	save_data();
+	printf(" [ DONE ]");
+	Sleep(400);
+
+	generate_single_photos();
+}
+void new_photo_to_singles()
+{
+	single_photos_number++;
+	clear_screen();
+	set_green();
+	printf(" [ NEW PHOTO ]\n");
+	set_blue();
+
+
+	//create number
+
+	printf(" Photo's Number: %d", single_photos_number);
+	single_photos[single_photos_number].number = single_photos_number;
+
+	//Create name
+
+	printf("\n Photo's Name: ");
+	char photo_name[10] = "Photo_";
+	char photo_number = single_photos_number + '0';
+	if (photo_number < 10)
+	{
+		photo_name[6] = photo_number;
+		photo_name[7] = '\0';
+	}
+	else if (photo_number < 100)
+	{
+		//48 = '0'
+		//57 = '9'
+		//58 = 10 49 si 48
+		//59 = 11 49 si 49
+		photo_name[6] = '0' + single_photos_number / 10 % 10;
+		photo_name[7] = photo_number - 10 * (single_photos_number / 10 % 10);
+		photo_name[8] = '\0';
+	}
+
+	strcpy_s(single_photos[single_photos_number].name, 50, photo_name);
+
+	printf("%s", photo_name);
+
+	//Dimension
+	printf("\n Dimension in MB: ");
+	double dimension;
+	scanf_s("%lf", &dimension);
+	single_photos[single_photos_number].dimension = dimension;
+	
+	//set dimension
+
+
+
+
+
+	set_green();
+	save_data();
+	printf(" [ DONE ]");
+	Sleep(400);
+
+	generate_single_photos();
+}
+void print_single_photos(unsigned int index)
+{
+	set_red();
+	printf(" Number  Name\n");
+	set_white();
+
+	for (unsigned int i = 1; i <= index; i++)
+	{
+		
+		if (i == single_photos_current_pos)
+		{
+			set_blue();
+			printf(" >> %d     %s\n", single_photos[i].number, single_photos[i].name);
+			
+			
+		}
+		else
+		{
+			set_white();
+			printf("    %d     %s\n", single_photos[i].number, single_photos[i].name);
+		}
+	}
+}
+void generate_single_photos()
+{
+	clear_screen();
+	set_yellow();
+	printf("              [ GALLERY ]");
+	set_green();
+	printf("  +NEW  +TRANSFER TO ALBUM\n\n ");
+
+	if (single_photos_number == 0)
+	{
+		set_white();
+		printf("         There are no Photos!");
+	}
+	else
+	{
+		print_single_photos(single_photos_number);
+	}
+
+		char key = _getch();
+		switch (key)
+		{
+		case 'a'://go back
+			generate_main_screen(current_album_number, albums_number, albums);
+		case 'n':
+			new_photo_to_singles();
+		case 'w'://go up
+			if (single_photos_current_pos > 1)
+				single_photos_current_pos--;
+			generate_single_photos();
+		case 's'://go down
+			if (single_photos_current_pos < single_photos_number)
+				single_photos_current_pos++;
+			generate_single_photos();
+		case 't':
+			add_photo_to_album(single_photos_current_pos);
+		default:generate_single_photos();
+		}
+
+	
+	
+}
+
 
 //verify name interity
 int album_integrity(unsigned int album_index)
@@ -124,10 +348,10 @@ void add_album(album albums[])
 		
 
 	set_green();
+	save_data();
 	printf(" [ DONE ]");
-	Sleep(600);
+	Sleep(400);
 	generate_main_screen(1, albums_number, albums);
-
 
 }
 void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[])
@@ -154,6 +378,7 @@ void remove_album(unsigned int album_index, unsigned int current_album_position,
 	albums_number--;
 	if (current_album_position > 1)
 		current_album_position--;
+	save_data();
 	generate_main_screen(current_album_position, albums_number, albums);
 }
 void rename_album(unsigned int album_index)
@@ -178,8 +403,9 @@ void rename_album(unsigned int album_index)
 	add_underscores(album_index);
 	input_in_main = 0;
 	set_green();
+	save_data();
 	printf(" [ DONE ]");
-	Sleep(600);
+	Sleep(400);
 	generate_main_screen(1, albums_number, albums);
 
 }
@@ -240,8 +466,10 @@ void add_photo()
 
 
 	set_green();
+	save_data();
 	printf(" [ DONE ]");
-	Sleep(600);
+	Sleep(400);
+	
 	generate_album_screen();
 
 }
@@ -260,7 +488,8 @@ void remove_photo(unsigned int photo_index, unsigned int alb_number)
 	albums[alb_number].photos_total--;
 	if (current_photo_position > 2);
 		current_photo_position--;
-    Sleep(700);
+    Sleep(500);
+	save_data();
 	generate_album_screen();
 	
 }
@@ -365,7 +594,11 @@ void print_main_screen(unsigned int current_album_pos, unsigned int albums_numbe
 {
 	clear_screen();
 	set_yellow();
-	printf("              [ GALLERY ]   ");
+	printf("           [ OPEN GALLERY - P ]  \n\n ");
+
+
+	set_yellow();
+	printf("              [ ALBUMS ]   ");
 	set_green();
 	printf("+NEW \n\n");
 
@@ -373,7 +606,7 @@ void print_main_screen(unsigned int current_album_pos, unsigned int albums_numbe
 	if (albums_number == 0)
 	{
 		set_white();
-		printf("         The Gallery is Empty!");
+		printf("     The Album's Gallery is Empty!");
 	}
 	else
 	{
@@ -407,12 +640,15 @@ void print_main_screen(unsigned int current_album_pos, unsigned int albums_numbe
 }
 void generate_main_screen(unsigned int current_album_position, unsigned int albums_number, album albums[])
 {
+	save_data();
 	clear_screen();
 	print_main_screen(current_album_position, albums_number, albums, input_in_main, input_controls);//first album is 1
 
 	char key = _getch();
 	switch ((int)key)
 	{
+	case 112://p
+		generate_single_photos();
 	case 27: //exit ESC
 		
 		saving_screen();
@@ -479,6 +715,7 @@ void open_remove_album(unsigned int current_photo_pos, unsigned int index)
 }
 void generate_album_screen()
 {
+	save_data();
 	clear_screen();
 	print_album_screen();
 	char key = _getch();
