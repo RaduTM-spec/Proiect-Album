@@ -38,11 +38,11 @@ input_in_album, //same as input_in_main but for album_screen
 
 input_controls = 0, //if 0 controls are invisible
 
-current_photo_position = 1; // current_photo_position, always starts with 0
-current_album_number = 1;
-
-
-
+current_photo_position = 1,// current_photo_position, always starts with 0
+current_album_number = 1,
+add_album_from_transfering = 0,//when you want to transfer a photo to an album, but you want to create a new album, this var will swap to 1 this way the add_album function will comeback to the transfering function
+another_frk_var = 0,// asta tine numarul albumului unde trb adaugat
+another_frk_var2 = 0;//asta tine numarul photografiei care trebuie adaugate
 void set_red() {
 	printf("\033[1;31m");
 }

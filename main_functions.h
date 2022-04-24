@@ -80,6 +80,8 @@ void generate_album_screen();
 void print_album_screen();
 void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[]);
 void generate_single_photos();
+void add_album(album albums[]);
+void add_photo_to_album_directly(unsigned int index_of_photo, unsigned int current_album_number);
 
 //gallery
 void remove_photo_from_singles(unsigned int index)
@@ -103,11 +105,26 @@ void add_photo_to_album(unsigned int index_of_photo)
 {
 	clear_screen();
 	set_green();
-	unsigned int current_album_number;
-	printf("\n  Insert the album's number you want to transfer this photo: ");
+	unsigned int current_album_number = 0;
+	if (another_frk_var != 0)
+	{
+		current_album_number = another_frk_var;
+		another_frk_var2 = 0;
+		another_frk_var = 0;
+		
+	}
+	else
+	{
+        printf("\n  Insert the album's number you want to transfer this photo (insert 0 to create a new album): ");
 		scanf("%d", &current_album_number);
-
-		if (current_album_number < 1 || current_album_number > albums_number)
+		if (current_album_number == 0)
+		{
+			add_album_from_transfering = 1;//nici nush daca mai trebuie
+			another_frk_var = albums_number;
+			another_frk_var2 = index_of_photo;
+			add_album(albums);
+		}
+		else if (current_album_number < 0 || current_album_number > albums_number)
 		{
 			printf("\n  This album doesn't exist!\n\n    Press any key to retry or 'a' to abort...");
 			char key = _getch();
@@ -117,6 +134,8 @@ void add_photo_to_album(unsigned int index_of_photo)
 				add_photo_to_album(index_of_photo);
 
 		}
+	}
+	
 	///TRANSFER
 	albums[current_album_number].photos_total++;
 
@@ -158,6 +177,8 @@ void add_photo_to_album(unsigned int index_of_photo)
 
 	generate_single_photos();
 }
+
+
 void new_photo_to_singles()
 {
 	single_photos_number++;
@@ -351,7 +372,14 @@ void add_album(album albums[])
 	save_data();
 	printf(" [ DONE ]");
 	Sleep(400);
-	generate_main_screen(1, albums_number, albums);
+	if (add_album_from_transfering == 1)
+	{
+		add_album_from_transfering = 0;
+		another_frk_var = albums_number;
+		add_photo_to_album(another_frk_var2);
+		return;
+	}
+    else generate_main_screen(1, albums_number, albums);
 
 }
 void remove_album(unsigned int album_index, unsigned int current_album_position, unsigned int albs_number, album albums[])
